@@ -1,0 +1,185 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EC2 instance with CloudWatch Agent to monitor disk usage on / and /media
+
+Parameters:
+  InstanceId:
+    Type: String
+    Description: The ID of an existing EC2 instance (e.g., i-0abc123def456)
+
+Resources:
+  # IAM Role for CloudWatch Agent
+  CloudWatchAgentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Path: /
+
+  # Instance Profile for the role
+  CloudWatchAgentInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref CloudWatchAgentRole
+
+  # SSM Parameter to store CloudWatch Agent config
+  CloudWatchAgentConfig:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/cloudwatch-agent/config/${AWS::StackName}"
+      Type: String
+      Value: !Sub |
+        {
+          "agent": {
+            "metrics_collection_interval": 30,
+            "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log"
+          },
+          "metrics": {
+            "namespace": "CWAgent",
+            "metrics_collected": {
+              "disk": {
+                "measurement": [
+                  "used_percent",
+                  "used",
+                  "total",
+                  "free"
+                ],
+                "metrics_collection_interval": 30,
+                "resources": [
+                  "/",
+                  "/media"
+                ],
+                "totalmetrics": false
+              },
+              "mem": {
+                "measurement": [
+                  "mem_used_percent",
+                  "mem_used",
+                  "mem_total",
+                  "mem_available"
+                ],
+                "metrics_collection_interval": 30
+              }
+            },
+            "append_dimensions": {
+              "InstanceId": "${aws:InstanceId}",
+              "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
+            }
+          }
+        }
+
+  # SSM Document for installation
+  CWAgentSSMDocument:
+    Type: AWS::SSM::Document
+    Properties:
+      DocumentType: Command
+      DocumentFormat: YAML
+      Name: !Sub "InstallCWAgent-${AWS::StackName}"
+      Content:
+        schemaVersion: "2.2"
+        description: "Install and configure CloudWatch Agent on Ubuntu"
+        parameters:
+          configParameterName:
+            type: String
+            description: SSM Parameter containing CloudWatch Agent configuration
+            default: !Ref CloudWatchAgentConfig
+        mainSteps:
+          - action: aws:runShellScript
+            name: installCloudWatchAgent
+            inputs:
+              timeoutSeconds: "600"
+              runCommand:
+                - |
+                  #!/bin/bash
+                  set -e
+                  cd /dev/shm/
+                  echo "Starting CloudWatch Agent installation..."
+
+                  # Update package list
+                  sudo apt-get update -y
+
+                  # Install wget if not present
+                  sudo apt-get install -y wget
+
+                  # Download and install SSM Agent (if needed)
+                  if ! sudo systemctl is-active --quiet amazon-ssm-agent; then
+                    echo "Installing SSM Agent..."
+                    wget -q https://s3.amazonaws.com/amazon-ssm-us-east-1/latest/debian_amd64/amazon-ssm-agent.deb
+                    sudo dpkg -i amazon-ssm-agent.deb || sudo apt-get install -f -y
+                    sudo systemctl enable amazon-ssm-agent
+                    sudo systemctl start amazon-ssm-agent
+                    sleep 10
+                  fi
+
+                  # Download and install CloudWatch Agent
+                  echo "Downloading CloudWatch Agent..."
+                  wget -q https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+
+                  echo "Installing CloudWatch Agent..."
+                  sudo dpkg -i amazon-cloudwatch-agent.deb || sudo apt-get install -f -y
+
+                  # Create directories if they don't exist
+                  sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
+                  sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/logs
+
+                  # Get the configuration from SSM Parameter
+                  echo "Retrieving configuration from SSM..."
+                  aws ssm get-parameter --name "{{ configParameterName }}" --query 'Parameter.Value' --output text | sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json > /dev/null
+
+                  # Start CloudWatch Agent
+                  echo "Starting CloudWatch Agent..."
+                  sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+                    -a fetch-config \
+                    -m ec2 \
+                    -s \
+                    -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+
+                  # Enable auto-start
+                  sudo systemctl enable amazon-cloudwatch-agent
+
+                  echo "CloudWatch Agent installation completed successfully!"
+                  sudo systemctl status amazon-cloudwatch-agent --no-pager
+
+  # SSM Association to run the document
+  CWAgentSSMAssociation:
+    Type: AWS::SSM::Association
+    DependsOn: CWAgentSSMDocument
+    Properties:
+      Name: !Ref CWAgentSSMDocument
+      Parameters:
+        configParameterName:
+          - !Ref CloudWatchAgentConfig
+      Targets:
+        - Key: InstanceIds
+          Values:
+            - !Ref InstanceId
+      AssociationName: !Sub "CloudWatchAgentInstall-${AWS::StackName}"
+      ComplianceSeverity: MEDIUM
+      MaxConcurrency: "1"
+      MaxErrors: "0"
+
+Outputs:
+  SSMDocumentName:
+    Description: Name of the SSM document created
+    Value: !Ref CWAgentSSMDocument
+
+  AssociationId:
+    Description: SSM Association ID
+    Value: !Ref CWAgentSSMAssociation
+
+  ConfigParameterName:
+    Description: SSM Parameter containing CloudWatch Agent configuration
+    Value: !Ref CloudWatchAgentConfig
+
+  CloudWatchAgentRole:
+    Description: IAM Role for CloudWatch Agent
+    Value: !Ref CloudWatchAgentRole

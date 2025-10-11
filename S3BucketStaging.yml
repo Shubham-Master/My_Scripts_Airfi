@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Creates a s3 bucket with event configurations
+Parameters:
+  S3BucketName:
+    Description: Name of s3 bucket
+    Type: String
+  S3IATA:
+    Description: IATA tag for the bucket
+    Type: String
+  S3CostAlloc:
+    Description: Cost allocation tag for the bucket (AirFi/CC)
+    Type: String
+  S3UserStack:
+    Description: User stack tag for the bucket (production, staging, development)
+    Type: String
+  S3Provider:
+    Description: Provider tag for the bucket
+    Type: String
+Resources:
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName: !Ref S3BucketName
+      NotificationConfiguration:
+        TopicConfigurations:
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .json
+            Topic: "arn:aws:sns:eu-west-1:649763982056:airfi-core-staging"
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .xlsx
+            Topic: "arn:aws:sns:eu-west-1:649763982056:airfi-core-staging"
+        QueueConfigurations:
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .gif
+            Queue: "arn:aws:sqs:eu-west-1:649763982056:content-verifier-stag"
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .png
+            Queue: "arn:aws:sqs:eu-west-1:649763982056:content-verifier-stag"
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .jpeg
+            Queue: "arn:aws:sqs:eu-west-1:649763982056:content-verifier-stag"
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .jpg
+            Queue: "arn:aws:sqs:eu-west-1:649763982056:content-verifier-stag"
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .m4v
+            Queue: "arn:aws:sqs:eu-west-1:649763982056:content-verifier-stag"
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .mp4
+            Queue: "arn:aws:sqs:eu-west-1:649763982056:content-verifier-stag"
+      Tags:
+        - Key: Name
+          Value: !Ref S3BucketName
+        - Key: IATA
+          Value: !Ref S3IATA
+        - Key: user:cost-alloc
+          Value: !Ref S3CostAlloc
+        - Key: user:stack
+          Value: !Ref S3UserStack
+        - Key: Provider
+          Value: !Ref S3Provider
+Outputs:
+  S3Bucketname:
+    Value: !Ref S3BucketName

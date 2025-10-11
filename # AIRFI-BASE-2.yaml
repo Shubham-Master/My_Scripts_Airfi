@@ -1,0 +1,167 @@
+# AIRFI-BASE-2
+# AIRFI-BASE-29
+# AIRFI-BASE-166
+# AIRFI-BASE-195
+# AIRFI-BASE-222
+# AIRFI-BASE-246
+# AIRFI-BASE-293
+client
+engine
+remote airserver.airfi.aero 443 tcp
+dev tun
+cipher AES-256-CBC
+verb 3
+nobind
+remote-cert-tls server
+pull
+script-security 2
+route-method exe
+<ca>
+-----BEGIN CERTIFICATE-----
+MIIDfzCCAmegAwIBAgIJAKVbZ100LOG+MA0GCSqGSIb3DQEBCwUAMC4xLDAqBgNV
+BAMMI01pQWlybGluZSBFbWJlZCBFbmdpbmVlcmluZyBCLlYuIENBMCAXDTI0MDUx
+NDA3MzQ1M1oYDzIxMjQwNDIwMDczNDUzWjAuMSwwKgYDVQQDDCNNaUFpcmxpbmUg
+RW1iZWQgRW5naW5lZXJpbmcgQi5WLiBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBAKPFoVUhbsJA1WUEJQbXEUaCEl/G28Wez5LxM15E93YWVxlqLBqy
+4hO55fUgo4MlOcuixAAM3rZqWUE9jYHiwkVGxXwehgVX0CrleEv0YskxDFMchmG4
+1sLvuyFVQLebSuj/q33JBTVPSClONRIcskOsxUQAU+jZ530LmH2yWgXc9brVoA+/
+oPrkcOvtxH/mdQR46fHRUo4PwMmDnNXyE7C20kV/bRanl8IJcbEgCME+c9l1h2Nt
+2oX7HG2xJDPaTNGAlXE1A2Cy4aperX1oIlNMsgq8vqhTc0uYfRKjWbWtNCoIpZy9
+BaC9WWKv/P3p9VE87mEqxYf8MTbY/0GYlaUCAwEAAaOBnTCBmjAMBgNVHRMEBTAD
+AQH/MB0GA1UdDgQWBBTjhycJsa3Y3YfhEeXfFnV5rbMTkTBeBgNVHSMEVzBVgBTj
+hycJsa3Y3YfhEeXfFnV5rbMTkaEypDAwLjEsMCoGA1UEAwwjTWlBaXJsaW5lIEVt
+YmVkIEVuZ2luZWVyaW5nIEIuVi4gQ0GCCQClW2ddNCzhvjALBgNVHQ8EBAMCAQYw
+DQYJKoZIhvcNAQELBQADggEBADvMdq1+zvbPsGDlkotbIBN/r+5yXav+0S5tG+5x
+k2r1oqCvYvshlHHEHXUnh/5qaNhdxvZdJJf6jicZ6GTiHzv6JIuD5z7SF4JI5k7T
+UEtzBlSXpDjMLlM7LZikgHWLnmo3A2U7hGAFUp0qrH1GCFeRM5x6rcwTsOCMSR9R
+VrjtDTKDW67v6q1ZesoVH3xJLRLdR1jB/B1HxuAjnBeI2/W82cCsduWoL5e6s1uQ
+egYe/5fdQGEAITKNpH1x+qe/a19ko0JDpuTw1LEOrNXPzUSWL2YD8sQf3OZZpEUC
+UgspqpwlyCho8nonWdTa8h+wtfvizdPZkzvB0YEAjhexGqM=
+-----END CERTIFICATE-----
+</ca>
+<cert>
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            21:16:b6:41:de:69:fa:1e:33:50:87:41:ac:87:b6:4c
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=MiAirline Embed Engineering B.V. CA
+        Validity
+            Not Before: Sep  3 12:45:31 2024 GMT
+            Not After : Sep  1 12:45:31 2034 GMT
+        Subject: C=US, ST=CA, L=SanFrancisco, O=Fort-Funston, OU=MyOrganizationalUnit, CN=flateef_router2/name=EasyRSA/emailAddress=me@myhost.mydomain
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:c6:d0:51:b1:b6:ce:e5:a3:4b:0e:30:6f:fb:0e:
+                    f1:c6:e3:24:78:3c:d1:8b:43:f0:82:ba:bf:1a:f1:
+                    10:24:f8:9b:5c:bd:1b:06:3c:1c:d3:c0:5e:8d:e0:
+                    55:6b:cf:67:92:d3:04:b1:50:21:f5:7d:8f:44:c6:
+                    e3:ed:63:1f:9f:a9:40:b8:a4:ac:56:60:5e:1f:78:
+                    82:87:49:70:17:9e:11:40:f1:dc:a7:84:64:f2:53:
+                    ad:69:c0:0a:8f:2b:8b:77:76:56:a7:71:14:b2:04:
+                    53:c9:60:3d:18:78:de:d8:c8:f7:1e:f1:3b:d5:d5:
+                    2d:47:12:47:1c:2f:34:c8:95:72:ff:d0:43:06:71:
+                    d3:fc:03:15:54:d1:dd:5d:8f:0c:14:8a:30:cb:91:
+                    64:f8:e0:7f:2a:d1:19:64:d1:5c:36:79:6a:8a:9c:
+                    c9:c4:b4:4c:61:aa:4a:da:ea:15:63:95:1f:05:76:
+                    e7:96:83:e9:f8:d2:b7:07:dd:25:73:53:1f:b0:f7:
+                    9a:48:f3:13:bb:cd:c5:01:c3:08:6c:d4:bf:87:a4:
+                    0f:9b:93:45:cc:b4:33:5f:b1:19:c5:04:50:35:ed:
+                    d8:cb:d4:1d:d4:0a:9a:8e:81:c5:c3:26:2d:18:40:
+                    b4:1c:ec:e5:76:c9:4a:7c:84:f4:af:98:e7:db:7c:
+                    dd:9b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints:
+                CA:FALSE
+            Netscape Comment:
+                Easy-RSA Generated Certificate
+            X509v3 Subject Key Identifier:
+                34:20:B0:43:60:90:F8:CA:C7:F6:8F:64:3C:FC:ED:52:92:91:97:17
+            X509v3 Authority Key Identifier:
+                keyid:E3:87:27:09:B1:AD:D8:DD:87:E1:11:E5:DF:16:75:79:AD:B3:13:91
+                DirName:/CN=MiAirline Embed Engineering B.V. CA
+                serial:A5:5B:67:5D:34:2C:E1:BE
+
+            X509v3 Extended Key Usage:
+                TLS Web Client Authentication
+            X509v3 Key Usage:
+                Digital Signature
+            X509v3 Subject Alternative Name:
+                DNS:flateef_router2
+    Signature Algorithm: sha256WithRSAEncryption
+         6f:00:ee:9f:70:d3:c9:50:63:7b:23:8d:0d:99:33:76:c1:78:
+         ea:e4:17:46:15:d0:c0:5d:9a:db:e0:eb:ef:4c:2f:80:25:dd:
+         d9:6d:a2:05:04:78:ae:64:b8:be:98:c6:46:a4:86:63:85:8a:
+         8c:da:78:aa:4f:e0:11:a3:ea:19:b4:49:90:3c:14:85:14:0a:
+         9d:84:71:a8:ae:94:9c:95:00:0d:c9:f3:2a:88:92:6f:68:4d:
+         4b:fc:49:38:14:b6:f0:b4:7d:e4:f7:78:29:bc:03:df:07:3b:
+         a2:2c:b1:2c:50:ea:19:1b:c3:17:bc:ac:64:fd:00:a6:8c:37:
+         ee:a2:b3:de:f0:89:38:cc:c1:a5:f9:0f:54:b1:62:e3:50:21:
+         49:b1:85:cb:a2:cb:63:4e:3d:e8:32:e0:11:cb:bc:91:7d:00:
+         a1:7d:4e:ac:1e:87:39:9e:05:5b:84:27:23:5d:a5:20:50:46:
+         d3:96:95:0d:0b:c2:8a:64:55:6c:b1:60:13:99:cd:9d:99:59:
+         2d:b9:6f:a9:90:2b:61:f8:1d:8b:07:f7:f7:ff:1a:5c:22:ea:
+         04:99:8b:77:2b:15:d4:5f:7e:09:80:be:f1:51:af:8f:5d:05:
+         c6:5b:78:fc:2b:20:22:64:b1:48:aa:f1:ed:63:ee:f8:76:bb:
+         19:1c:4e:37
+-----BEGIN CERTIFICATE-----
+MIIEajCCA1KgAwIBAgIQIRa2Qd5p+h4zUIdBrIe2TDANBgkqhkiG9w0BAQsFADAu
+MSwwKgYDVQQDDCNNaUFpcmxpbmUgRW1iZWQgRW5naW5lZXJpbmcgQi5WLiBDQTAe
+Fw0yNDA5MDMxMjQ1MzFaFw0zNDA5MDExMjQ1MzFaMIG2MQswCQYDVQQGEwJVUzEL
+MAkGA1UECBMCQ0ExFTATBgNVBAcTDFNhbkZyYW5jaXNjbzEVMBMGA1UEChMMRm9y
+dC1GdW5zdG9uMR0wGwYDVQQLExRNeU9yZ2FuaXphdGlvbmFsVW5pdDEYMBYGA1UE
+AxQPZmxhdGVlZl9yb3V0ZXIyMRAwDgYDVQQpEwdFYXN5UlNBMSEwHwYJKoZIhvcN
+AQkBFhJtZUBteWhvc3QubXlkb21haW4wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQDG0FGxts7lo0sOMG/7DvHG4yR4PNGLQ/CCur8a8RAk+JtcvRsGPBzT
+wF6N4FVrz2eS0wSxUCH1fY9ExuPtYx+fqUC4pKxWYF4feIKHSXAXnhFA8dynhGTy
+U61pwAqPK4t3dlancRSyBFPJYD0YeN7YyPce8TvV1S1HEkccLzTIlXL/0EMGcdP8
+AxVU0d1djwwUijDLkWT44H8q0Rlk0Vw2eWqKnMnEtExhqkra6hVjlR8FdueWg+n4
+0rcH3SVzUx+w95pI8xO7zcUBwwhs1L+HpA+bk0XMtDNfsRnFBFA17djL1B3UCpqO
+gcXDJi0YQLQc7OV2yUp8hPSvmOfbfN2bAgMBAAGjgfowgfcwCQYDVR0TBAIwADAt
+BglghkgBhvhCAQ0EIBYeRWFzeS1SU0EgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0G
+A1UdDgQWBBQ0ILBDYJD4ysf2j2Q8/O1SkpGXFzBeBgNVHSMEVzBVgBTjhycJsa3Y
+3YfhEeXfFnV5rbMTkaEypDAwLjEsMCoGA1UEAwwjTWlBaXJsaW5lIEVtYmVkIEVu
+Z2luZWVyaW5nIEIuVi4gQ0GCCQClW2ddNCzhvjATBgNVHSUEDDAKBggrBgEFBQcD
+AjALBgNVHQ8EBAMCB4AwGgYDVR0RBBMwEYIPZmxhdGVlZl9yb3V0ZXIyMA0GCSqG
+SIb3DQEBCwUAA4IBAQBvAO6fcNPJUGN7I40NmTN2wXjq5BdGFdDAXZrb4OvvTC+A
+Jd3ZbaIFBHiuZLi+mMZGpIZjhYqM2niqT+ARo+oZtEmQPBSFFAqdhHGorpSclQAN
+yfMqiJJvaE1L/Ek4FLbwtH3k93gpvAPfBzuiLLEsUOoZG8MXvKxk/QCmjDfuorPe
+8Ik4zMGl+Q9UsWLjUCFJsYXLostjTj3oMuARy7yRfQChfU6sHoc5ngVbhCcjXaUg
+UEbTlpUNC8KKZFVssWATmc2dmVktuW+pkCth+B2LB/f3/xpcIuoEmYt3KxXUX34J
+gL7xUa+PXQXGW3j8KyAiZLFIqvHtY+74drsZHE43
+-----END CERTIFICATE-----
+</cert>
+<key>
+-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDG0FGxts7lo0sO
+MG/7DvHG4yR4PNGLQ/CCur8a8RAk+JtcvRsGPBzTwF6N4FVrz2eS0wSxUCH1fY9E
+xuPtYx+fqUC4pKxWYF4feIKHSXAXnhFA8dynhGTyU61pwAqPK4t3dlancRSyBFPJ
+YD0YeN7YyPce8TvV1S1HEkccLzTIlXL/0EMGcdP8AxVU0d1djwwUijDLkWT44H8q
+0Rlk0Vw2eWqKnMnEtExhqkra6hVjlR8FdueWg+n40rcH3SVzUx+w95pI8xO7zcUB
+wwhs1L+HpA+bk0XMtDNfsRnFBFA17djL1B3UCpqOgcXDJi0YQLQc7OV2yUp8hPSv
+mOfbfN2bAgMBAAECggEAVyDafIiB+Y9riCdgG+V7vc6zn+H/bwnyMEiJEdSNX7Z3
+19ekLUJQ29fVWFX0+Y9mc6j4yIA2sbA6BkkngFRNepohHApG4H/RH/efNIzRi/gg
+1ZZpPhy+ZJiZSdv4hK/vqgX5id371NwioAEGJWBrQRQpgKz1rQuEkT4IXeiuOCzI
+TZyRHMWT9MnBfLegO8B/aMfJdx6Q83Wa8tTI60tgq2Id2RLFGnPF75AdznBc7gQU
+U1Ve9qc2411hhmS6+q8SWjdQftNIJee/R6yEzIfQ5JxMiXUUJuSW7xY1KAK/rXvu
+EGLk/MAkqJY73DNbz5oyistdTT7CxfKLlkvROtPWkQKBgQD1Z+sSKVpMgraXueK2
+KBnPsCPTIyeixLkvX1mnlABTmUJfvOuv2ue0EouEqEYtgeXMo1O5gf2kPeJkvHYS
+Q93IFlUfHFkfi4Lx67bsAG2FYklm0FTQve3QI+EzJMTBHw3VFqBqmxDr5LATLvVL
+4uvIA6B8TqggQdnCgQsXWaN4yQKBgQDPZX3TSdQX4mzez1Nm5Clq6I5icfYUpuGP
+qfRt/byz4IxbzmP0Z2p9xWQN5pKDOElpneLgZCwpoVZV6lWHuT2EhArXUa7Psh2x
+1erp3dZ6ymIFPIASYyaiqfGuJiwKoEulpsWJbBMHNft6tMj6EWboeJ5ZqPHO59xp
+JJXSqJO5QwKBgEmtdWnyeGXYKLHM4UAHMhikrVzKhS/dGCwc2HHzgVWYAdF0it41
+PrNVjgW577fh8/hIYO6lFF2nJr1Px7McJQ3ZhpzcifVqkVnIhxa72iXdqGPx0EUL
+gMaovwf31gqVJDYBoQ/glmf8NNDNnF+4NUnLrPclNlzY6GP5EjdkdivhAoGATs6r
+BEmOjVDdu8CeWX+jeVtLF39kWa6cEWIsXktHlDZkP1JqyuktHwONpHaT/8a4pqh3
+GHsYCO2kh9sWiw9Jn/wovm7sdUGiZPv7WsiQAnK60nCN3e7NNIxNKLaaj6Mfe5+m
+ejSV+mx51cOyhstsBjQnP7yhvdR+/XkIcVbbY08CgYBQa71aSSmD+pzMm99XFxAQ
+OrOQ4IiyC2bFSIjpKacqrQNFhaAx2ZvC0uRlAYd+aHaUUOZJqDGGKVQ3ZskUItvJ
+9kC4u3bc0VZS8qGDVmt9UqtZBoIn8cukfG28I/h01DJNgx2rksnAufbPKW6djIXD
+W0CSfbXXWvjXPesbX9Y+rQ==
+-----END PRIVATE KEY-----
+</key>

@@ -1,0 +1,102 @@
+var userProperties = PropertiesService.getUserProperties();
+
+const BASE_URL = userProperties.getProperty("disco");
+const BASE_URL_BOX_MONITORING = userProperties.getProperty("boxMonitoring");
+const auth = userProperties.getProperty("auth");
+const digestfull = "Basic " + Utilities.base64Encode(auth);
+var headers = {
+  "Accept": "application/json",
+  "Content-Type": "application/json",
+  "method": "GET",
+  "headers": { "Authorization": digestfull },
+  "muteHttpExceptions": true
+};
+
+function getBoxDetailsFromDisco(boxSerial = '') {
+  if (boxSerial.length != 0) {
+    const url = BASE_URL + "/api/device/" + boxSerial;
+    try {
+      var resp = UrlFetchApp.fetch(url, headers);
+    } catch (err) {
+      Logger.log("Error retrieving data for url " + url + ":" + resp.getContentText());
+    }
+
+    if (resp.getResponseCode() != 200) {
+      Logger.log("Error retrieving data for url " + url + ":" + resp.getContentText());
+      return undefined;
+    } else {
+      const res = JSON.parse(resp.getContentText());
+
+      const dateOnly = res.lastSeenTimestamp.split('T')[0];
+
+      let boxItem = {
+        serial: boxSerial,
+        currentCustomer: res.currentCustomer.customerCode,
+        powmanVersion: res.powmanVersion,
+        currentFirmware: res.currentFirmware.version,
+        mode: res.mode.name,
+        opStatus: res.operationalStatus.name,
+        acdcStatus: res.contentSyncStatus,
+        display: res.displayContent,
+        lastSeenTimestamp: dateOnly
+      };
+      return boxItem;
+    }
+  }
+}
+
+function updateSheet(sheetName, serialColumn, columnMapping) {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = spreadsheet.getSheetByName(sheetName);
+
+  var lastRow = sheet.getLastRow();
+
+  for (var i = 1; i <= lastRow; i++) {
+    var cellValue = sheet.getRange(i + 1, serialColumn).getValue();
+    if (cellValue) {
+      let boxInfo = getBoxDetailsFromDisco(cellValue);
+      if (boxInfo) {
+        sheet.getRange(i + 1, columnMapping.currentCustomer).setValue(boxInfo.currentCustomer);
+        sheet.getRange(i + 1, columnMapping.powmanVersion).setValue(boxInfo.powmanVersion);
+        sheet.getRange(i + 1, columnMapping.currentFirmware).setValue(boxInfo.currentFirmware);
+        sheet.getRange(i + 1, columnMapping.mode).setValue(boxInfo.mode);
+        sheet.getRange(i + 1, columnMapping.opStatus).setValue(boxInfo.opStatus);
+        sheet.getRange(i + 1, columnMapping.acdcStatus).setValue(boxInfo.acdcStatus);
+        sheet.getRange(i + 1, columnMapping.display).setValue(boxInfo.display);
+        sheet.getRange(i + 1, columnMapping.lastSeenTimestamp).setValue(boxInfo.lastSeenTimestamp);
+      }
+    }
+  }
+}
+
+function main() {
+  // Column mapping for MAIL_G9
+  const mailG9Mapping = {
+    currentCustomer: 4,
+    powmanVersion: 5,
+    currentFirmware: 6,
+    mode: 7,
+    opStatus: 8,
+    acdcStatus: 9,
+    display: 10,
+    lastSeenTimestamp: 11
+  };
+
+  // Column mapping for Soldered_Fuse (adjust columns as needed)
+  const solderedFuseMapping = {
+    currentCustomer: 2, 
+    powmanVersion: 3,   
+    currentFirmware: 4, 
+    mode: 5,            
+    opStatus: 6,        
+    acdcStatus: 7,     
+    display: 8,         
+    lastSeenTimestamp: 9, 
+  };
+
+  // Update the first sheet "MAIL_G9"
+  updateSheet("MAIL_G9", 2, mailG9Mapping);
+
+  // Update the second sheet "Soldered_Fuse"
+  updateSheet("Soldered_Fuse", 1, solderedFuseMapping);
+}
