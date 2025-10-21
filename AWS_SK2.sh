@@ -8,6 +8,15 @@
 #   - Writes cleaned logs to another S3 bucket preserving folder structure
 #   - Maintains per-box checkpoints + global completed-box list
 # -------------------------------------------------------------------
+set -x
+LOGS_YEAR=$1 # year in YYYY format
+
+# Check for year argument
+if [ -z "$LOGS_YEAR" ]; then
+    echo "Usage: $0 <year>"
+    echo "Example: $0 2023"
+    exit 1
+fi
 
 # ---------------- CONFIGURATION ----------------
 SRC_BUCKET="airserver-backups"
@@ -16,20 +25,24 @@ BASE_TMP="/tmp/s3_processing"
 mkdir -p "$BASE_TMP"
 SOURCE_MOUNTED="/home/ubuntu/airserver_backup"
 DEST_MOUNTED="/home/ubuntu/airserver-processed"
-LOG_LIST="/home/ubuntu/logs-list.txt"
-
-
-GLOBAL_COMPLETED="$BASE_TMP/completed_boxes.txt"
-SKIPPED_FILE="$BASE_TMP/skipped_fase.txt"
-
-CUTOFF_DATE=$(date -d '365 days ago' +%s)
-LOGS_YEAR=$1 # year in YYYY format
 
 # If we have Logs year then use LOG_LIST to be /home/ubuntu/logs-list-YYYY.txt
 if [ -n "$LOGS_YEAR" ]; then
     LOG_LIST="/home/ubuntu/logs-list-$LOGS_YEAR.txt"
     echo "Using LOG_LIST: $LOG_LIST"
+else
+    LOG_LIST="/home/ubuntu/logs-list.txt"
 fi
+
+
+aws s3 ls "s3://$SRC_BUCKET/logs/" --recursive | awk '{print $4}' \
+            | grep "logfile-maintenance-$LOGS_YEAR" > "$LOG_LIST"
+
+GLOBAL_COMPLETED="$BASE_TMP/completed_boxes.txt"
+SKIPPED_FILE="$BASE_TMP/skipped_fase.txt"
+
+
+CUTOFF_DATE=$(date -d '365 days ago' +%s)
 
 
 # If LOG_LIST is not found or empty
@@ -95,7 +108,7 @@ grep -E "logfile-maintenance*." $LOG_LIST | while read -r LOG_FILE; do
     #  Get StorageClass of a Specific File
     STORAGE_CLASS=$(aws s3api head-object --bucket "$SRC_BUCKET" --key "$KEY"  --query "StorageClass || 'STANDARD'" --output text)
     echo "StorageClass of $KEY: $STORAGE_CLASS"
-    if [[ "$STORAGE_CLASS" != "STANDARD" ]]; then
+    if [[ "$STORAGE_CLASS" != "STANDARD" && "$STORAGE_CLASS" != "GLACIER_IR" ]]; then
         continue
     fi
     # Skip if already processed this object
@@ -137,7 +150,7 @@ grep -E "logfile-maintenance*." $LOG_LIST | while read -r LOG_FILE; do
     mark_processed "$KEY" "$BOX_CHECKPOINT"
 
     # If all logs for this box processed, mark box as completed
-    TOTAL=$(aws s3api list-objects-v2 --bucket "$SRC_BUCKET" --prefix "$(dirname "$KEY")/" --query 'length(Contents[])' --output text)
+    TOTAL=$(aws s3api list-objects-v2 --bucket "$SRC_BUCKET" --prefix "$(dirname "$KEY")/" --query "Contents[].Key" --output text | wc -w)
     DONE=$(wc -l < "$BOX_CHECKPOINT")
     if [[ "$DONE" -eq "$TOTAL" ]]; then
         if ! grep -Fxq "$BOX_ID" "$GLOBAL_COMPLETED" 2>/dev/null; then
