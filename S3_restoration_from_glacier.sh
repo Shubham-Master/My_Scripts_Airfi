@@ -48,3 +48,5 @@ export BUCKET DAYS_TO_KEEP LOG_FILE PROCESSED_LIST
 cat "$INPUT_FILE" | parallel -j "$MAX_JOBS" restore_object {}
 
 echo "All restore requests submitted at $(date)"
+
+
